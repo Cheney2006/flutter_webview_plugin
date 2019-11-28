@@ -135,6 +135,7 @@ class FlutterWebviewPlugin {
   Future<Null> launch(
     String url, {
     Map<String, String> headers,
+    Set<JavascriptChannel> javascriptChannels,
     bool withJavascript,
     bool clearCache,
     bool clearCookies,
