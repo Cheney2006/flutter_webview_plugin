@@ -7,7 +7,6 @@ import 'package:flutter/rendering.dart';
 import 'base.dart';
 
 class WebviewScaffold extends StatefulWidget {
-
   const WebviewScaffold({
     Key key,
     this.appBar,
@@ -32,7 +31,9 @@ class WebviewScaffold extends StatefulWidget {
     this.allowFileURLs,
     this.resizeToAvoidBottomInset = false,
     this.invalidUrlRegex,
-    this.geolocationEnabled
+    this.geolocationEnabled,
+    this.useWideViewPort,
+    this.isRectChanged = true,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
@@ -58,6 +59,8 @@ class WebviewScaffold extends StatefulWidget {
   final bool resizeToAvoidBottomInset;
   final String invalidUrlRegex;
   final bool geolocationEnabled;
+  final bool useWideViewPort;
+  final bool isRectChanged; //是否监听图片变化
 
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
@@ -123,28 +126,27 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
         onRectChanged: (Rect value) {
           if (_rect == null) {
             _rect = value;
-            webviewReference.launch(
-              widget.url,
-              headers: widget.headers,
-              withJavascript: widget.withJavascript,
-              clearCache: widget.clearCache,
-              clearCookies: widget.clearCookies,
-              hidden: widget.hidden,
-              enableAppScheme: widget.enableAppScheme,
-              userAgent: widget.userAgent,
-              rect: _rect,
-              withZoom: widget.withZoom,
-              withLocalStorage: widget.withLocalStorage,
-              withLocalUrl: widget.withLocalUrl,
-              scrollBar: widget.scrollBar,
-              supportMultipleWindows: widget.supportMultipleWindows,
-              appCacheEnabled: widget.appCacheEnabled,
-              allowFileURLs: widget.allowFileURLs,
-              invalidUrlRegex: widget.invalidUrlRegex,
-              geolocationEnabled: widget.geolocationEnabled
-            );
+            webviewReference.launch(widget.url,
+                headers: widget.headers,
+                withJavascript: widget.withJavascript,
+                clearCache: widget.clearCache,
+                clearCookies: widget.clearCookies,
+                hidden: widget.hidden,
+                enableAppScheme: widget.enableAppScheme,
+                userAgent: widget.userAgent,
+                rect: _rect,
+                withZoom: widget.withZoom,
+                withLocalStorage: widget.withLocalStorage,
+                withLocalUrl: widget.withLocalUrl,
+                scrollBar: widget.scrollBar,
+                supportMultipleWindows: widget.supportMultipleWindows,
+                appCacheEnabled: widget.appCacheEnabled,
+                allowFileURLs: widget.allowFileURLs,
+                invalidUrlRegex: widget.invalidUrlRegex,
+                useWideViewPort: widget.useWideViewPort,
+                geolocationEnabled: widget.geolocationEnabled);
           } else {
-            if (_rect != value) {
+            if (_rect != value && widget.isRectChanged) {
               _rect = value;
               _resizeTimer?.cancel();
               _resizeTimer = Timer(const Duration(milliseconds: 250), () {
@@ -154,7 +156,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
             }
           }
         },
-        child: widget.initialChild ?? const Center(child: const CircularProgressIndicator()),
+        child: widget.initialChild ?? Container(),
       ),
     );
   }
@@ -177,7 +179,8 @@ class _WebviewPlaceholder extends SingleChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, _WebviewPlaceholderRender renderObject) {
+  void updateRenderObject(
+      BuildContext context, _WebviewPlaceholderRender renderObject) {
     renderObject..onRectChanged = onRectChanged;
   }
 }

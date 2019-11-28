@@ -61,9 +61,16 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         result(nil);
     } else if ([@"cleanCookies" isEqualToString:call.method]) {
         [self cleanCookies];
+        result(nil);
     } else if ([@"back" isEqualToString:call.method]) {
         [self back];
         result(nil);
+    } else if([@"canGoBack" isEqualToString:call.method]){
+        BOOL isCanGoBack = NO;
+        if (self.webview != nil) {
+           isCanGoBack = [self.webview canGoBack];
+        }
+        result(@(isCanGoBack));
     } else if ([@"forward" isEqualToString:call.method]) {
         [self forward];
         result(nil);
@@ -322,7 +329,7 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    [channel invokeMethod:@"onState" arguments:@{@"type": @"finishLoad", @"url": webView.URL.absoluteString}];
+    [channel invokeMethod:@"onState" arguments:@{@"type": @"finishLoad", @"url": webView.URL.absoluteString,@"title":webView.title?:@""}];
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {

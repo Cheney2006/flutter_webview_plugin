@@ -3,10 +3,10 @@
           package="com.flutter_webview_plugin">
     <application>
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
+            android:name="com.flutter_webview_plugin.WebFileProvider"
+            android:authorities="${applicationId}.webfileprovide"
             android:exported="false"
-            android:grantUriPermissions="true" 
+            android:grantUriPermissions="true"
             tools:replace="android:authorities">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"

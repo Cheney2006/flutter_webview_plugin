@@ -3,6 +3,7 @@ package com.flutter_webview_plugin;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.text.TextUtils;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -53,6 +54,10 @@ public class BrowserClient extends WebViewClient {
         super.onPageFinished(view, url);
         Map<String, Object> data = new HashMap<>();
         data.put("url", url);
+        String title = view.getTitle();
+        if (!TextUtils.isEmpty(title)) {
+            data.put("title", title);
+        }
 
         FlutterWebviewPlugin.channel.invokeMethod("onUrlChanged", data);
 

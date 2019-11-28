@@ -265,7 +265,7 @@ class WebviewManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return FileProvider.getUriForFile(context, packageName + ".fileprovider", capturedFile);
+        return FileProvider.getUriForFile(context, packageName + ".webfileprovide", capturedFile);
     }
 
     private File createCapturedFile(String prefix, String suffix) throws IOException {
@@ -351,6 +351,11 @@ class WebviewManager {
         webView.getSettings().setJavaScriptEnabled(withJavascript);
         webView.getSettings().setBuiltInZoomControls(withZoom);
         webView.getSettings().setSupportZoom(withZoom);
+        webView.getSettings().setTextZoom(100);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webView.setWebContentsDebuggingEnabled(true);
+        }
+
         webView.getSettings().setDomStorageEnabled(withLocalStorage);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(supportMultipleWindows);
 
@@ -358,12 +363,18 @@ class WebviewManager {
 
         webView.getSettings().setAppCacheEnabled(appCacheEnabled);
 
+        webView.getSettings().setSavePassword(false);
+
+
         webView.getSettings().setAllowFileAccessFromFileURLs(allowFileURLs);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(allowFileURLs);
 
         webView.getSettings().setUseWideViewPort(useWideViewPort);
 
+        webView.getSettings().setDefaultTextEncodingName("utf-8");
+
         webViewClient.updateInvalidUrlRegex(invalidUrlRegex);
+
 
         if (geolocationEnabled) {
             webView.getSettings().setGeolocationEnabled(true);

@@ -60,7 +60,8 @@ class FlutterWebviewPlugin {
         );
         break;
       case 'onHttpError':
-        _onHttpError.add(WebViewHttpError(call.arguments['code'], call.arguments['url']));
+        _onHttpError.add(
+            WebViewHttpError(call.arguments['code'], call.arguments['url']));
         break;
     }
   }
@@ -111,7 +112,8 @@ class FlutterWebviewPlugin {
   /// - [invalidUrlRegex] is the regular expression of URLs that web view shouldn't load.
   /// For example, when webview is redirected to a specific URL, you want to intercept
   /// this process by stopping loading this URL and replacing webview by another screen.
-  Future<Null> launch(String url, {
+  Future<Null> launch(
+    String url, {
     Map<String, String> headers,
     bool withJavascript,
     bool clearCache,
@@ -182,6 +184,9 @@ class FlutterWebviewPlugin {
   /// Navigates back on the Webview.
   Future<Null> goBack() async => await _channel.invokeMethod('back');
 
+  /// Navigates can go back on the Webview.
+  Future<bool> canGoBack() async => await _channel.invokeMethod('canGoBack');
+
   /// Navigates forward on the Webview.
   Future<Null> goForward() async => await _channel.invokeMethod('forward');
 
@@ -198,10 +203,12 @@ class FlutterWebviewPlugin {
   }
 
   // Clean cookies on WebView
-  Future<Null> cleanCookies() async => await _channel.invokeMethod('cleanCookies');
+  Future<Null> cleanCookies() async =>
+      await _channel.invokeMethod('cleanCookies');
 
   // Stops current loading process
-  Future<Null> stopLoading() async => await _channel.invokeMethod('stopLoading');
+  Future<Null> stopLoading() async =>
+      await _channel.invokeMethod('stopLoading');
 
   /// Close all Streams
   void dispose() {
@@ -243,9 +250,11 @@ class FlutterWebviewPlugin {
 }
 
 class WebViewStateChanged {
-  WebViewStateChanged(this.type, this.url, this.navigationType);
+  WebViewStateChanged(this.type, this.url, this.navigationType, this.title);
 
   factory WebViewStateChanged.fromMap(Map<String, dynamic> map) {
+    print(map.toString());
+
     WebViewState t;
     switch (map['type']) {
       case 'shouldStart':
@@ -261,12 +270,14 @@ class WebViewStateChanged {
         t = WebViewState.abortLoad;
         break;
     }
-    return WebViewStateChanged(t, map['url'], map['navigationType']);
+    return WebViewStateChanged(
+        t, map['url'], map['navigationType'], map['title']);
   }
 
   final WebViewState type;
   final String url;
   final int navigationType;
+  final String title;
 }
 
 class WebViewHttpError {
