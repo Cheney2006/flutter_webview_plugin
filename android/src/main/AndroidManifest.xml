@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           package="com.flutter_webview_plugin">
+
     <application>
         <provider
             android:name="com.flutter_webview_plugin.WebFileProvider"

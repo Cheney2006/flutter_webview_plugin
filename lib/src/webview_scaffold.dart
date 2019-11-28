@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_webview_plugin/src/javascript_channel.dart';
 
 import 'base.dart';
 
@@ -12,6 +13,7 @@ class WebviewScaffold extends StatefulWidget {
     this.appBar,
     @required this.url,
     this.headers,
+    this.javascriptChannels,
     this.withJavascript,
     this.clearCache,
     this.clearCookies,
@@ -21,8 +23,11 @@ class WebviewScaffold extends StatefulWidget {
     this.persistentFooterButtons,
     this.bottomNavigationBar,
     this.withZoom,
+    this.displayZoomControls,
     this.withLocalStorage,
     this.withLocalUrl,
+    this.localUrlScope,
+    this.withOverviewMode,
     this.scrollBar,
     this.supportMultipleWindows,
     this.appCacheEnabled,
@@ -34,11 +39,13 @@ class WebviewScaffold extends StatefulWidget {
     this.geolocationEnabled,
     this.useWideViewPort,
     this.isRectChanged = true,
+    this.debuggingEnabled = false,
   }) : super(key: key);
 
   final PreferredSizeWidget appBar;
   final String url;
   final Map<String, String> headers;
+  final Set<JavascriptChannel> javascriptChannels;
   final bool withJavascript;
   final bool clearCache;
   final bool clearCookies;
@@ -48,8 +55,10 @@ class WebviewScaffold extends StatefulWidget {
   final List<Widget> persistentFooterButtons;
   final Widget bottomNavigationBar;
   final bool withZoom;
+  final bool displayZoomControls;
   final bool withLocalStorage;
   final bool withLocalUrl;
+  final String localUrlScope;
   final bool scrollBar;
   final bool supportMultipleWindows;
   final bool appCacheEnabled;
@@ -59,8 +68,11 @@ class WebviewScaffold extends StatefulWidget {
   final bool resizeToAvoidBottomInset;
   final String invalidUrlRegex;
   final bool geolocationEnabled;
-  final bool useWideViewPort;
   final bool isRectChanged; //是否监听图片变化
+  final bool withOverviewMode;
+  final bool useWideViewPort;
+  final bool debuggingEnabled;
+
 
   @override
   _WebviewScaffoldState createState() => _WebviewScaffoldState();
@@ -80,15 +92,19 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
     webviewReference.close();
 
     _onBack = webviewReference.onBack.listen((_) async {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
-      // Equivalent of Navigator.maybePop(), except that [webviewReference]
-      // is closed when the pop goes ahead. Whether the pop was performed
-      // can't be determined from the return value of Navigator.maybePop().
-      final route = ModalRoute.of(context);
-      final pop = await route?.willPop();
+      // The willPop/pop pair here is equivalent to Navigator.maybePop(),
+      // which is what's called from the flutter back button handler.
+      final pop = await _topMostRoute.willPop();
       if (pop == RoutePopDisposition.pop) {
-        webviewReference.close();
+        // Close the webview if it's on the route at the top of the stack.
+        final isOnTopMostRoute = _topMostRoute == ModalRoute.of(context);
+        if (isOnTopMostRoute) {
+          webviewReference.close();
+        }
         Navigator.pop(context);
       }
     });
@@ -101,6 +117,16 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
         }
       });
     }
+  }
+
+  /// Equivalent to [Navigator.of(context)._history.last].
+  Route<dynamic> get _topMostRoute {
+    var topMost;
+    Navigator.popUntil(context, (route) {
+      topMost = route;
+      return true;
+    });
+    return topMost;
   }
 
   @override
@@ -126,7 +152,9 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
         onRectChanged: (Rect value) {
           if (_rect == null) {
             _rect = value;
-            webviewReference.launch(widget.url,
+
+            webviewReference.launch(
+              widget.url,
                 headers: widget.headers,
                 withJavascript: widget.withJavascript,
                 clearCache: widget.clearCache,
@@ -144,7 +172,13 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
                 allowFileURLs: widget.allowFileURLs,
                 invalidUrlRegex: widget.invalidUrlRegex,
                 useWideViewPort: widget.useWideViewPort,
-                geolocationEnabled: widget.geolocationEnabled);
+                geolocationEnabled: widget.geolocationEnabled,
+                displayZoomControls: widget.displayZoomControls,
+                localUrlScope: widget.localUrlScope,
+                withOverviewMode: widget.withOverviewMode,
+                debuggingEnabled: widget.debuggingEnabled,
+            );
+
           } else {
             if (_rect != value && widget.isRectChanged) {
               _rect = value;
@@ -157,6 +191,7 @@ class _WebviewScaffoldState extends State<WebviewScaffold> {
           }
         },
         child: widget.initialChild ?? Container(),
+
       ),
     );
   }

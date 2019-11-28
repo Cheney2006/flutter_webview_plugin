@@ -1,3 +1,44 @@
+# 0.3.9+1
+
+- Fixed error methods on iOS
+
+# 0.3.9
+
+- Fixed error methods on iOS
+- fixed build
+- fixed ios clean cookies
+- 4 Make plugin work in headless mode when extending FlutterApplication
+- added canGoBack and canGoForward methods
+
+# 0.3.8
+
+- Fix iOS local URL support (fixes #114)
+- bugfix: Added google() repository to allprojects to satisfy androidx build rules
+- fixed min sdk for android
+
+# 0.3.7
+
+- Added reloading url with headers
+- Added support for reloading url with headers
+
+# 0.3.6
+
+- Allow web contents debugging in Chrome
+- Android: allow geolocation and file chooser simultaneously
+- Add min sdk requirement and descriptions
+- fix bug android webview httperror exception
+- Exposes displayZoomControls, withOverviewMode and useWideViewPort settings for Android WebView
+
+# 0.3.5
+
+- Ability to choose from camera or gallery when using
+- Support for webview’s estimated loading progress #255
+- Fix back button handler to be compatible with the WillPopScope widget
+
+# 0.3.4
+
+- WebView always hidden on iOS
+
 # 0.3.3
 
 - BREAKING CHANGE - AndroidX support
