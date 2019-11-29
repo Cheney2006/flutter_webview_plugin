@@ -88,9 +88,6 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "cleanCookies":
                 cleanCookies(call, result);
                 break;
-            case "canGoBack":
-                canGoBack(result);
-                break;
             case "canGoForward":
                 canGoForward(result);
                 break;
@@ -201,19 +198,6 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     }
 
     /**
-     * Checks if can navigate back
-     *
-     * @param result
-     */
-    private void canGoBack(MethodChannel.Result result) {
-        if (webViewManager != null) {
-            result.success(webViewManager.canGoBack());
-        } else {
-            result.error("Webview is null", null, null);
-        }
-    }
-
-    /**
      * Navigates back on the Webview.
      */
     private void back(MethodCall call, MethodChannel.Result result) {
@@ -235,7 +219,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         result.success(isCanGoBack);
     }
 
-
+    /*
      * Checks if can navigate forward
      * @param result
      */
