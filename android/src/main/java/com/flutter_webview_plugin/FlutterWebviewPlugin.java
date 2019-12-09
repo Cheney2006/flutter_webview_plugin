@@ -101,7 +101,10 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     }
 
     private void cleanCache(MethodChannel.Result result) {
-        webViewManager.cleanCache();
+        if (webViewManager != null) {
+            webViewManager.cleanCache();
+        }
+
         WebStorage.getInstance().deleteAllData();
         result.success(null);
     }
@@ -266,8 +269,12 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     }
 
     private void eval(MethodCall call, final MethodChannel.Result result) {
+
         if (webViewManager != null) {
+
             webViewManager.eval(call, result);
+        }else {
+            result.success(null);
         }
     }
 
