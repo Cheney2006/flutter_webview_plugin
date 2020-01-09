@@ -122,7 +122,12 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
     }
 
     if (userAgent != (id)[NSNull null]) {
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
+        [self.webview evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id result, NSError *error) {
+            NSString *oldUserAgent = result;
+            NSString *newUserAgent = [NSString stringWithFormat:@"%@ %@",oldUserAgent,userAgent];
+            [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": newUserAgent}];
+
+        }];
     }
 
     CGRect rc;

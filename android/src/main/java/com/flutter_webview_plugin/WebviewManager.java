@@ -412,7 +412,8 @@ class WebviewManager {
         }
 
         if (userAgent != null) {
-            webView.getSettings().setUserAgentString(userAgent);
+            String newUserAgent=webView.getSettings().getUserAgentString()+" "+userAgent;
+            webView.getSettings().setUserAgentString(newUserAgent);
         }
 
         if (!scrollBar) {
